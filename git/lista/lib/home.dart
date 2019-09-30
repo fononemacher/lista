@@ -7,17 +7,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   void _apaga() {
     setState(() {
       tarefas.removeWhere((tarefa) => tarefa.feito);
     });
   }
 
-  void _adiciona() {
-    setState(() {
-      tarefas.add(Task(msg: "", feito: false));
-    });
+  _adiciona() {
+    if (tarefas.last.msg.isNotEmpty) {
+      setState(() {
+        tarefas.add(Task(msg: "", feito: false));
+      });
+    }
   }
 
   List<Task> tarefas = [Task()];
@@ -33,7 +34,7 @@ class _HomeState extends State<Home> {
         title: Text("Tarefas"),
         actions: <Widget>[
           IconButton(
-            onPressed:_apaga,
+            onPressed: _apaga,
             icon: Icon(
               Icons.clear_all,
               size: 30,
@@ -41,7 +42,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      
       body: SingleChildScrollView(
         child: Container(
           color: Color(0xff5E5E5E),
@@ -50,7 +50,10 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: tarefas.map((Task task) {
+                TextEditingController controller =
+                    TextEditingController(text: task.msg);
                 return Row(
+                  key: Key(task.id.toString()),
                   children: <Widget>[
                     IconButton(
                       onPressed: () {
@@ -68,6 +71,14 @@ class _HomeState extends State<Home> {
                     ),
                     Expanded(
                       child: TextField(
+                        onChanged: (nome) {
+                          setState(() {
+                            task.msg = controller.text;
+                          });
+                        },
+                        controller: controller,
+                        style: TextStyle(
+                            color: task.feito ? Colors.white70 : Colors.white),
                         decoration: InputDecoration(
                           hintText: "O que precisa ser feito?",
                         ),
